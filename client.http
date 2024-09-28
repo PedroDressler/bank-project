@@ -1,0 +1,44 @@
+@baseUrl = http://localhost:3535
+@user1 = {{register_pedro.response.body.user.id}}
+@user2 = {{register_jdoe.response.body.user.id}}
+
+# @name register_pedro
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "username": "khallzone",
+  "full_name": "Pedro Ávila",
+  "email": "pedro@email.com",
+  "cpf": "111.111.111-11",
+  "password": "pedrinho_lindo123"
+}
+
+###
+
+# @name register_jdoe 
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "username": "j_doe",
+  "full_name": "John Doe",
+  "email": "jdoe@email.com",
+  "cpf": "000.000.000-00",
+  "password": "password123"
+}
+
+###
+
+# @name create_transaction
+POST {{baseUrl}}/transactions
+Content-Type: application/json
+
+{
+  "amount": 500,
+  "method": "PIX",
+  "sender_id": "{{user2}}", 
+  "receiver_id": "{{user1}}"
+}
+
+###

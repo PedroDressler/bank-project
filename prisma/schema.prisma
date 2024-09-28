@@ -1,0 +1,59 @@
+// O PicPay Simplificado é uma plataforma de pagamentos simplificada.
+// Nela é possível depositar e realizar transferências de dinheiro entre usuários.
+// Temos 2 tipos de usuários, os comuns e lojistas, ambos têm carteira com dinheiro e realizam transferências entre eles.
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  OWNER
+}
+
+enum PaymentMethod {
+  PIX
+  CARD
+}
+
+model User {
+  id            String  @id @unique @default(uuid())
+  role          Role    @default(CUSTOMER)
+  username      String
+  full_name     String?
+  email         String  @unique
+  cpf           String  @unique
+  hash_password String
+  wallet        Decimal @default(0.0)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  transactions_sent     Transaction[] @relation("Sender")
+  transactions_received Transaction[] @relation("Receiver")
+
+  @@map("users")
+}
+
+model Transaction {
+  id                   String        @id @unique @default(uuid())
+  amount               Decimal
+  method               PaymentMethod
+  isTransactionAproved Boolean       @default(false)
+
+  created_at DateTime @default(now())
+
+  sender    User   @relation("Sender", fields: [sender_id], references: [id])
+  sender_id String
+
+  receiver    User   @relation("Receiver", fields: [receiver_id], references: [id])
+  receiver_id String
+
+  @@map("transactions")
+}
