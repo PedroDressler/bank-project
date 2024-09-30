@@ -4,7 +4,6 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -46,14 +45,14 @@ model Transaction {
   amount               Decimal
   method               PaymentMethod
   isTransactionAproved Boolean       @default(false)
-
   created_at DateTime @default(now())
 
-  debtor    User   @relation("Debtor", fields: [debtor_id], references: [id])
-  debtor_id String
 
-  receiver    User   @relation("Receiver", fields: [receiver_id], references: [id])
-  receiver_id String
+  debtor    User?   @relation("Debtor", fields: [debtor_id], references: [id])
+  debtor_id String?
+
+  receiver    User?   @relation("Receiver", fields: [receiver_id], references: [id])
+  receiver_id String?
 
   @@map("transactions")
 }

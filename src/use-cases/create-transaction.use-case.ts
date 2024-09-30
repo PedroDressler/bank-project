@@ -1,10 +1,11 @@
-import { Prisma, Transaction } from '@prisma/client'
+import { Prisma, Transaction, User } from '@prisma/client'
 import { TransactionRepositories } from '../repositories/transaction-repositories'
 import { ResourceNotFoundError } from '../errors/resource-not-found-error'
 import { UnauthorizedError } from '../errors/unauthorized-error'
 import { ValidateTransactionUseCase } from '@/use-cases/validate-transaction.use-case'
 import { UserRepositories } from '@/repositories/user-repositories'
 import { UpdateTransactionInvolvedWalletsPipe } from '../pipes/update-transaction-involved-wallets.pipe'
+import { BadRequestError } from '@/errors/bad-request-error'
 
 interface CreateTransactionUseCaseRequest
   extends Prisma.TransactionUncheckedCreateInput {}
@@ -28,20 +29,29 @@ export class CreateTransactionUseCase {
     debtor_id,
   }: CreateTransactionUseCaseRequest): Promise<CreateTransactionUseCaseResponse> {
     // check necessary rules
-    const debtor = await this.userRepository.findUserById(debtor_id)
+    if (!debtor_id && !receiver_id) throw new BadRequestError()
 
-    if (!debtor) {
-      throw new ResourceNotFoundError()
+    let debtor: User | null = null
+    let receiver: User | null = null
+
+    if (debtor_id) {
+      debtor = await this.userRepository.findUserById(debtor_id)
+
+      if (!debtor) {
+        throw new ResourceNotFoundError()
+      }
+
+      if (debtor.wallet < amount) {
+        throw new UnauthorizedError()
+      }
     }
 
-    if (debtor.wallet < amount) {
-      throw new UnauthorizedError()
-    }
+    if (receiver_id) {
+      receiver = await this.userRepository.findUserById(receiver_id)
 
-    const receiver = await this.userRepository.findUserById(receiver_id)
-
-    if (!receiver) {
-      throw new ResourceNotFoundError()
+      if (!receiver) {
+        throw new ResourceNotFoundError()
+      }
     }
 
     // create unvalidated transaction

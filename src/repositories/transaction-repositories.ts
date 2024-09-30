@@ -5,9 +5,14 @@ type UpdateTransactionInvolvedAmountType = {
   wallet: number
 }
 
-export interface UpdateTransactionInvolvedAmount {
-  creditedUserDetails: UpdateTransactionInvolvedAmountType
-  debitedUserDetails: UpdateTransactionInvolvedAmountType
+interface UpdateTransactionInvolvedAmountInterface {
+  creditedUserDetails?: UpdateTransactionInvolvedAmountType
+  debitedUserDetails?: UpdateTransactionInvolvedAmountType
+}
+
+export interface UpdateTransactionInvolvedAmountParams {
+  transactionId: string
+  details: UpdateTransactionInvolvedAmountInterface
 }
 
 export interface TransactionRepositories {
@@ -35,13 +40,10 @@ export interface TransactionRepositories {
   ): Promise<Transaction[]>
 
   // @update
-  updateTransactionInvolvedAmount(
-    transactionId: string,
-    details: {
-      creditedUserDetails: UpdateTransactionInvolvedAmountType
-      debitedUserDetails: UpdateTransactionInvolvedAmountType
-    },
-  ): Promise<Transaction>
+  updateTransactionInvolvedAmount({
+    transactionId,
+    details: { creditedUserDetails, debitedUserDetails },
+  }: UpdateTransactionInvolvedAmountParams): Promise<Transaction>
 
   validateTransaction(transactionId: string): Promise<Transaction>
 }

@@ -104,6 +104,44 @@ describe('Create Transaction Use Case', () => {
     }).rejects.toBeInstanceOf(ResourceNotFoundError)
   })
 
+  test('user should deposit credit to bank', async () => {
+    const { transaction } = await sut.handle({
+      amount: 1000,
+      method: 'PIX',
+      receiver_id: 'test-pedro',
+    })
+
+    expect(transaction).toBeTruthy()
+
+    const user = await userRepository.findUserById('test-pedro')
+
+    expect(Number(user?.wallet)).toBe(1500)
+  })
+
+  test('user should withdrawal credit to bank', async () => {
+    const { transaction } = await sut.handle({
+      amount: 200,
+      method: 'PIX',
+      debtor_id: 'test-pedro',
+    })
+
+    expect(transaction).toBeTruthy()
+
+    const user = await userRepository.findUserById('test-pedro')
+
+    expect(Number(user?.wallet)).toBe(300)
+  })
+
+  test("user should not withdrawal credit to bank if it doesn't have enough credit", async () => {
+    expect(async () => {
+      await sut.handle({
+        amount: 1000,
+        method: 'PIX',
+        debtor_id: 'test-pedro',
+      })
+    }).rejects.toBeInstanceOf(UnauthorizedError)
+  })
+
   test('if amount is correctly debited and credited', async () => {
     await sut.handle({
       amount: 500,
