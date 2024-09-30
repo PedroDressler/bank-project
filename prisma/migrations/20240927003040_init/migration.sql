@@ -24,10 +24,10 @@ CREATE TABLE "transactions" (
     "amount" DECIMAL(65,30) NOT NULL,
     "method" "PaymentMethod" NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "sender_id" TEXT NOT NULL,
+    "debtor_id" TEXT NOT NULL,
     "receiver_id" TEXT NOT NULL,
 
-    CONSTRAINT "transactions_pkey" PRIMARY KEY ("sender_id","receiver_id")
+    CONSTRAINT "transactions_pkey" PRIMARY KEY ("debtor_id","receiver_id")
 );
 
 -- CreateIndex
@@ -37,7 +37,7 @@ CREATE UNIQUE INDEX "users_id_key" ON "users"("id");
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- AddForeignKey
-ALTER TABLE "transactions" ADD CONSTRAINT "transactions_sender_id_fkey" FOREIGN KEY ("sender_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "transactions" ADD CONSTRAINT "transactions_debtor_id_fkey" FOREIGN KEY ("debtor_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_receiver_id_fkey" FOREIGN KEY ("receiver_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

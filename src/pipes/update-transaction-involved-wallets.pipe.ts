@@ -1,54 +1,49 @@
 import { Transaction, User } from '@prisma/client'
-import { UseCase } from '../use-cases/interface'
 import { Decimal } from '@prisma/client/runtime/library'
 import { TransactionRepositories } from '../repositories/transaction-repositories'
-import { ResourceNotFoundError } from '../errors/resource-not-found-error'
 
 interface UpdateTransactionInvolvedWalletsPipeRequest {
   amount: Decimal
+  transactionId: string
   receiver: User
-  sender: User
+  debtor: User
 }
 
 interface UpdateTransactionInvolvedWalletsPipeResponse {
-  calculatedTransaction: Transaction
+  transaction: Transaction
 }
 
-export class UpdateTransactionInvolvedWalletsPipe
-  implements
-    UseCase<
-      UpdateTransactionInvolvedWalletsPipeRequest,
-      UpdateTransactionInvolvedWalletsPipeResponse
-    >
-{
+export class UpdateTransactionInvolvedWalletsPipe {
   constructor(private transactionRepository: TransactionRepositories) {}
 
-  async handle({
+  async transform({
     amount,
+    transactionId,
     receiver,
-    sender,
+    debtor,
   }: UpdateTransactionInvolvedWalletsPipeRequest): Promise<UpdateTransactionInvolvedWalletsPipeResponse> {
     // calculate receiver wallet
     const receiverWalletUpdated = Number(receiver.wallet) + Number(amount)
 
-    // calculate sender wallet
-    const senderWalletUpdated = Number(sender.wallet) - Number(amount)
+    // calculate debtor wallet
+    const debtorWalletUpdated = Number(debtor.wallet) - Number(amount)
 
     // query updated all wallet's values
-    const calculatedTransaction =
-      await this.transactionRepository.updateTransactionInvolvedAmount({
-        receiverChangedDetails: {
-          id: receiver.id,
-          wallet: receiverWalletUpdated,
+    const transaction =
+      await this.transactionRepository.updateTransactionInvolvedAmount(
+        transactionId,
+        {
+          creditedUserDetails: {
+            id: receiver.id,
+            wallet: receiverWalletUpdated,
+          },
+          debitedUserDetails: {
+            id: debtor.id,
+            wallet: debtorWalletUpdated,
+          },
         },
-        senderChangedDetails: {
-          id: sender.id,
-          wallet: senderWalletUpdated,
-        },
-      })
+      )
 
-    if (!calculatedTransaction) throw new ResourceNotFoundError()
-
-    return { calculatedTransaction }
+    return { transaction }
   }
 }

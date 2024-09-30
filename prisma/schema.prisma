@@ -25,7 +25,7 @@ enum PaymentMethod {
 model User {
   id            String  @id @unique @default(uuid())
   role          Role    @default(CUSTOMER)
-  username      String
+  username      String  @unique
   full_name     String?
   email         String  @unique
   cpf           String  @unique
@@ -35,8 +35,8 @@ model User {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-  transactions_sent     Transaction[] @relation("Sender")
-  transactions_received Transaction[] @relation("Receiver")
+  transactions_debited  Transaction[] @relation("Debtor")
+  transactions_credited Transaction[] @relation("Receiver")
 
   @@map("users")
 }
@@ -49,8 +49,8 @@ model Transaction {
 
   created_at DateTime @default(now())
 
-  sender    User   @relation("Sender", fields: [sender_id], references: [id])
-  sender_id String
+  debtor    User   @relation("Debtor", fields: [debtor_id], references: [id])
+  debtor_id String
 
   receiver    User   @relation("Receiver", fields: [receiver_id], references: [id])
   receiver_id String

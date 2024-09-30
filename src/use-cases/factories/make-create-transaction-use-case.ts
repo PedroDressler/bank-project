@@ -1,6 +1,6 @@
 import { UpdateTransactionInvolvedWalletsPipe } from '../../pipes/update-transaction-involved-wallets.pipe'
-import { PrismaTransactionRepository } from '../../repositories/prisma/prisma-transaction-repository'
-import { PrismaUserRepository } from '../../repositories/prisma/prisma-user-repository'
+import { PrismaTransactionRepository } from '../../repositories/prisma/prisma-transaction.repository'
+import { PrismaUserRepository } from '../../repositories/prisma/prisma-user.repository'
 import { CreateTransactionUserCase } from '../create-transaction.use-case'
 import { ValidateTransactionUseCase } from '../validate-transaction.use-case'
 

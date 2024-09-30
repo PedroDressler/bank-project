@@ -1,26 +1,19 @@
 import { Prisma, Transaction } from '@prisma/client'
-import { UseCase } from './interface'
 import { TransactionRepositories } from '../repositories/transaction-repositories'
 import { ResourceNotFoundError } from '../errors/resource-not-found-error'
 import { UnauthorizedError } from '../errors/unauthorized-error'
-import { ValidateTransactionUseCase } from './validate-transaction.use-case'
-import { UserRepositories } from '../repositories/user-repositories'
+import { ValidateTransactionUseCase } from '@/use-cases/validate-transaction.use-case'
+import { UserRepositories } from '@/repositories/user-repositories'
 import { UpdateTransactionInvolvedWalletsPipe } from '../pipes/update-transaction-involved-wallets.pipe'
 
-interface CreateTransactionUserCaseRequest
+interface CreateTransactionUseCaseRequest
   extends Prisma.TransactionUncheckedCreateInput {}
 
-interface CreateTransactionUserCaseResponse {
+interface CreateTransactionUseCaseResponse {
   transaction: Transaction
 }
 
-export class CreateTransactionUserCase
-  implements
-    UseCase<
-      CreateTransactionUserCaseRequest,
-      CreateTransactionUserCaseResponse
-    >
-{
+export class CreateTransactionUseCase {
   constructor(
     private transactionRepository: TransactionRepositories,
     private userRepository: UserRepositories,
@@ -32,20 +25,20 @@ export class CreateTransactionUserCase
     amount,
     method,
     receiver_id,
-    sender_id,
-  }: CreateTransactionUserCaseRequest): Promise<CreateTransactionUserCaseResponse> {
+    debtor_id,
+  }: CreateTransactionUseCaseRequest): Promise<CreateTransactionUseCaseResponse> {
     // check necessary rules
-    const sender = await this.userRepository.getUserById(sender_id)
+    const debtor = await this.userRepository.findUserById(debtor_id)
 
-    if (!sender) {
+    if (!debtor) {
       throw new ResourceNotFoundError()
     }
 
-    if (sender.wallet < amount) {
+    if (debtor.wallet < amount) {
       throw new UnauthorizedError()
     }
 
-    const receiver = await this.userRepository.getUserById(receiver_id)
+    const receiver = await this.userRepository.findUserById(receiver_id)
 
     if (!receiver) {
       throw new ResourceNotFoundError()
@@ -56,24 +49,22 @@ export class CreateTransactionUserCase
       await this.transactionRepository.createTransaction({
         amount,
         method,
-        sender: {
-          connect: sender,
-        },
-        receiver: {
-          connect: receiver,
-        },
+        debtor_id,
+        receiver_id,
       })
 
     // transform users wallets from transaction context
-    const { calculatedTransaction } =
-      await this.updateTransactionInvolvedWalletsPipe.handle({
+    const { transaction: transformedTransaction } =
+      await this.updateTransactionInvolvedWalletsPipe.transform({
         amount: unvalidatedTransaction.amount,
-        sender,
+        transactionId: unvalidatedTransaction.id,
+        debtor,
         receiver,
       })
 
+    // validate the transaction
     const { transaction } = await this.validateTransactionUseCase.handle({
-      calculatedTransaction,
+      transactionId: transformedTransaction.id,
     })
 
     return { transaction }

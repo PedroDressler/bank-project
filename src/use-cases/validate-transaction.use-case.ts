@@ -1,31 +1,23 @@
 import { Transaction } from '@prisma/client'
-import { UseCase } from './interface'
 import { TransactionRepositories } from '../repositories/transaction-repositories'
 import { ResourceNotFoundError } from '../errors/resource-not-found-error'
 
 interface ValidateTransactionUseCaseRequest {
-  calculatedTransaction: Transaction
+  transactionId: string
 }
 
 interface ValidateTransactionUseCaseResponse {
   transaction: Transaction
 }
 
-export class ValidateTransactionUseCase
-  implements
-    UseCase<
-      ValidateTransactionUseCaseRequest,
-      ValidateTransactionUseCaseResponse
-    >
-{
+export class ValidateTransactionUseCase {
   constructor(private transactionRepository: TransactionRepositories) {}
 
   async handle({
-    calculatedTransaction,
+    transactionId,
   }: ValidateTransactionUseCaseRequest): Promise<ValidateTransactionUseCaseResponse> {
-    const transaction = await this.transactionRepository.validateTransaction(
-      calculatedTransaction.id,
-    )
+    const transaction =
+      await this.transactionRepository.validateTransaction(transactionId)
 
     if (!transaction) throw new ResourceNotFoundError()
 

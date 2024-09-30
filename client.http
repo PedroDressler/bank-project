@@ -16,7 +16,7 @@ Content-Type: application/json
 
 ###
 
-# @name register_jdoe 
+# @name register_jdoe
 POST {{baseUrl}}/users
 Content-Type: application/json
 
@@ -32,13 +32,15 @@ Content-Type: application/json
 
 # @name create_transaction
 POST {{baseUrl}}/transactions
+
 Content-Type: application/json
 
 {
   "amount": 500,
   "method": "PIX",
-  "sender_id": "{{user2}}", 
-  "receiver_id": "{{user1}}"
+  "debtor_id": "{{user1}}", 
+  "receiver_id": "{{user2}}"
 }
 
 ###
+

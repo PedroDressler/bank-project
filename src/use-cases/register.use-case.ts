@@ -1,5 +1,4 @@
 import { User } from '@prisma/client'
-import { UseCase } from './interface'
 import { UserRepositories } from '../repositories/user-repositories'
 import { hash } from 'bcrypt'
 import { ResourceAlreadyExistsError } from '../errors/resource-already-exists-error'
@@ -16,9 +15,7 @@ interface RegisterUseCaseResponse {
   user: User
 }
 
-export class RegisterUseCase
-  implements UseCase<RegisterUseCaseRequest, RegisterUseCaseResponse>
-{
+export class RegisterUseCase {
   constructor(private userRepository: UserRepositories) {}
 
   async handle({
@@ -40,13 +37,20 @@ export class RegisterUseCase
       throw new ResourceAlreadyExistsError()
     }
 
+    const userWithSameUserName =
+      await this.userRepository.findUserByUserName(username)
+
+    if (userWithSameUserName) {
+      throw new ResourceAlreadyExistsError()
+    }
+
     const user = await this.userRepository.registerUser({
       cpf,
       email,
       hash_password: await hash(password, 6),
       username,
       full_name,
-      wallet: 1000.0,
+      wallet: 0.0,
     })
 
     return { user }

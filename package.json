@@ -3,9 +3,16 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test:unit": "vitest run --dir src/use-cases",
+    "test:unit:watch": "vitest --dir src/use-cases",
+    "pretest:e2e": "run-s test:create-prisma-environment test:install-prisma-environment",
+    "test:e2e": "vitest run --dir src/http",
+    "test:e2e:watch": "vitest --dir src/http",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +26,8 @@
     "supertest": "^7.0.0",
     "tsx": "^4.19.1",
     "typescript": "^5.6.2",
+    "vite": "5.4.8",
+    "vite-tsconfig-paths": "^5.0.1",
     "vitest": "^2.1.1"
   },
   "dependencies": {

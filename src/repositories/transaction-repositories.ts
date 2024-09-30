@@ -1,38 +1,47 @@
 import { Prisma, Transaction } from '@prisma/client'
 
-export type UpdateTransactionInvolvedAmountType = {
+type UpdateTransactionInvolvedAmountType = {
   id: string
   wallet: number
 }
 
 export interface UpdateTransactionInvolvedAmount {
-  receiverChangedDetails: UpdateTransactionInvolvedAmountType
-  senderChangedDetails: UpdateTransactionInvolvedAmountType
+  creditedUserDetails: UpdateTransactionInvolvedAmountType
+  debitedUserDetails: UpdateTransactionInvolvedAmountType
 }
 
 export interface TransactionRepositories {
-  createTransaction(data: Prisma.TransactionCreateInput): Promise<Transaction>
+  // @create
+  createTransaction(
+    data: Prisma.TransactionUncheckedCreateInput,
+  ): Promise<Transaction>
 
-  getTransaction(transactionId: string): Promise<Transaction | null>
+  // @search
+  findTransaction(transactionId: string): Promise<Transaction | null>
 
-  fetchReceivedTransactionsByUser(
+  fetchCreditedTransactionsHistory(
     receiverId: string,
     page: number,
   ): Promise<Transaction[]>
 
-  fetchSentTransactionsByUser(
-    senderId: string,
+  fetchDebitedTransactionsHistory(
+    debtorId: string,
     page: number,
   ): Promise<Transaction[]>
 
-  fetchTransactionHistory(
+  fetchAllTransactionsHistory(
     userId: Prisma.TransactionInclude,
     page: number,
   ): Promise<Transaction[]>
 
+  // @update
   updateTransactionInvolvedAmount(
-    details: UpdateTransactionInvolvedAmount,
-  ): Promise<Transaction | null>
+    transactionId: string,
+    details: {
+      creditedUserDetails: UpdateTransactionInvolvedAmountType
+      debitedUserDetails: UpdateTransactionInvolvedAmountType
+    },
+  ): Promise<Transaction>
 
-  validateTransaction(transactionId: string): Promise<Transaction | null>
+  validateTransaction(transactionId: string): Promise<Transaction>
 }

@@ -1,9 +1,26 @@
-import { Prisma } from '@prisma/client'
+import { Prisma, User } from '@prisma/client'
 import { UserRepositories } from '../user-repositories'
 import { prisma } from '../../app'
 
 export class PrismaUserRepository implements UserRepositories {
-  async getUserById(userId: string) {
+  findUserByUserName(username: string): Promise<User | null> {
+    throw new Error('Method not implemented.')
+  }
+
+  async updateUserWallet(userId: string, amount: number) {
+    const user = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        wallet: amount,
+      },
+    })
+
+    return user
+  }
+
+  async findUserById(userId: string) {
     const user = await prisma.user.findUnique({
       where: {
         id: userId,

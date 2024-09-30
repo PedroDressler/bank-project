@@ -21,7 +21,7 @@ export class PrismaTransactionRepository implements TransactionRepositories {
 
   async updateTransactionInvolvedAmount({
     receiverChangedDetails,
-    senderChangedDetails,
+    debtorChangedDetails,
   }: UpdateTransactionInvolvedAmount) {
     const receiver = await prisma.user.update({
       data: {
@@ -32,18 +32,18 @@ export class PrismaTransactionRepository implements TransactionRepositories {
       },
     })
 
-    const sender = await prisma.user.update({
+    const debtor = await prisma.user.update({
       data: {
-        wallet: senderChangedDetails.wallet,
+        wallet: debtorChangedDetails.wallet,
       },
       where: {
-        id: senderChangedDetails.id,
+        id: debtorChangedDetails.id,
       },
     })
 
     const transaction = await prisma.transaction.findFirst({
       where: {
-        sender,
+        debtor,
         receiver,
         isTransactionAproved: false,
       },
@@ -60,7 +60,7 @@ export class PrismaTransactionRepository implements TransactionRepositories {
     return transaction
   }
 
-  async getTransaction(transactionId: string) {
+  async findTransaction(transactionId: string) {
     const transaction = await prisma.transaction.findUnique({
       where: {
         id: transactionId,
@@ -70,7 +70,7 @@ export class PrismaTransactionRepository implements TransactionRepositories {
     return transaction
   }
 
-  async fetchReceivedTransactionsByUser(receiverId: string, page: number) {
+  async fetchCreditedTransactionsHistory(receiverId: string, page: number) {
     const transactions = await prisma.transaction.findMany({
       where: {
         receiver_id: receiverId,
@@ -82,10 +82,10 @@ export class PrismaTransactionRepository implements TransactionRepositories {
     return transactions
   }
 
-  async fetchSentTransactionsByUser(senderId: string, page: number) {
+  async fetchDebitedTransactionsHistory(debtorId: string, page: number) {
     const transactions = await prisma.transaction.findMany({
       where: {
-        sender_id: senderId,
+        debtor_id: debtorId,
       },
       skip: page - 0,
       take: 20,
@@ -94,14 +94,14 @@ export class PrismaTransactionRepository implements TransactionRepositories {
     return transactions
   }
 
-  async fetchTransactionHistory(
+  async fetchAllTransactionsHistory(
     userId: Prisma.TransactionInclude,
     page: number,
   ) {
     const transactions = await prisma.transaction.findMany({
       include: {
         receiver: userId.receiver,
-        sender: userId.sender,
+        debtor: userId.debtor,
       },
       orderBy: {
         created_at: 'desc',
