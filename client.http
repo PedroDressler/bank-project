@@ -7,7 +7,7 @@ POST {{baseUrl}}/users
 Content-Type: application/json
 
 {
-  "username": "khallzone",
+  "username": "pedro_dressler",
   "full_name": "Pedro Ávila",
   "email": "pedro@email.com",
   "cpf": "111.111.111-11",
@@ -38,9 +38,8 @@ Content-Type: application/json
 {
   "amount": 500,
   "method": "PIX",
-  "debtor_id": "{{user1}}", 
+  "debtor_id": "{{user1}}",
   "receiver_id": "{{user2}}"
 }
 
 ###
-

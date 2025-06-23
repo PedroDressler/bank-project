@@ -19,11 +19,11 @@ describe('Register Use Case', () => {
       cpf: '000.000.000-00',
       full_name: 'Pedro Ávila Dressler',
       password: 'password123',
-      username: 'khallzone',
+      username: 'pedro.dressler',
     })
 
-    expect(user.cpf).toBe('000.000.000-00')
-    expect(user.id).toEqual(expect.any(String))
+    await expect(user.cpf).toBe('000.000.000-00')
+    await expect(user.id).toEqual(expect.any(String))
   })
 
   it('should hash password correctly', async () => {
@@ -32,7 +32,7 @@ describe('Register Use Case', () => {
       cpf: '000.000.000-00',
       full_name: 'Pedro Ávila Dressler',
       password: 'password123',
-      username: 'khallzone',
+      username: 'pedro.dressler',
     })
 
     const isPasswordCorrectlyHashed = await compare(
@@ -40,7 +40,7 @@ describe('Register Use Case', () => {
       user.hash_password,
     )
 
-    expect(isPasswordCorrectlyHashed).toBe(true)
+    await expect(isPasswordCorrectlyHashed).toBe(true)
   })
 
   it('should not register a user if user with same email already exists', async () => {
@@ -49,10 +49,10 @@ describe('Register Use Case', () => {
       cpf: '000.000.000-00',
       full_name: 'Pedro Ávila Dressler',
       password: 'password123',
-      username: 'khallzone',
+      username: 'pedro.dressler',
     })
 
-    expect(async () => {
+    await expect(async () => {
       await sut.handle({
         email: 'pedro@email.com',
         cpf: '999.999.999-99',
@@ -69,10 +69,10 @@ describe('Register Use Case', () => {
       cpf: '000.000.000-00',
       full_name: 'Pedro Ávila Dressler',
       password: 'password123',
-      username: 'khallzone',
+      username: 'pedro.dressler',
     })
 
-    expect(async () => {
+    await expect(async () => {
       await sut.handle({
         email: 'jdoe@email.com',
         cpf: '000.000.000-00',
@@ -89,16 +89,16 @@ describe('Register Use Case', () => {
       cpf: '000.000.000-00',
       full_name: 'Pedro Ávila Dressler',
       password: 'password123',
-      username: 'khallzone',
+      username: 'pedro.dressler',
     })
 
-    expect(async () => {
+    await expect(async () => {
       await sut.handle({
         email: 'jdoe@email.com',
         cpf: '999.999.999-99',
         full_name: 'JohnDoe',
         password: 'password321',
-        username: 'khallzone',
+        username: 'pedro.dressler',
       })
     }).rejects.toBeInstanceOf(ResourceAlreadyExistsError)
   })

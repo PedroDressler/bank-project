@@ -43,7 +43,7 @@ export interface TransactionRepositories {
   updateTransactionInvolvedAmount({
     transactionId,
     details: { creditedUserDetails, debitedUserDetails },
-  }: UpdateTransactionInvolvedAmountParams): Promise<Transaction>
+  }: UpdateTransactionInvolvedAmountParams): Promise<Transaction | null>
 
   validateTransaction(transactionId: string): Promise<Transaction>
 }

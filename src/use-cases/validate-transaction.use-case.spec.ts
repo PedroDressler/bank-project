@@ -23,7 +23,7 @@ describe('Validate Transaction Use Case', () => {
       created_at: new Date(),
       updated_at: null,
       full_name: 'Pedro Ávila Dressler',
-      username: 'khallzone',
+      username: 'pedro.dressler',
       role: 'CUSTOMER',
       wallet: new Prisma.Decimal(500),
     })
@@ -57,7 +57,7 @@ describe('Validate Transaction Use Case', () => {
       transactionId: 'test-transaction-one',
     })
 
-    expect(transaction).toBeTruthy()
-    expect(transaction.isTransactionAproved).toBe(true)
+  await  expect(transaction).toBeTruthy()
+  await  expect(transaction.isTransactionAproved).toBe(true)
   })
 })

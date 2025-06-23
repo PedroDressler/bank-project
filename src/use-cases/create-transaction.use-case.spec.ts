@@ -41,7 +41,7 @@ describe('Create Transaction Use Case', () => {
       created_at: new Date(),
       updated_at: null,
       full_name: 'Pedro Ávila Dressler',
-      username: 'khallzone',
+      username: 'pedro.dressler',
       role: 'CUSTOMER',
       wallet: new Prisma.Decimal(500),
     })
@@ -68,11 +68,11 @@ describe('Create Transaction Use Case', () => {
       method: 'PIX',
     })
 
-    expect(transaction.isTransactionAproved).toBe(true)
+    await expect(transaction.isTransactionAproved).toBe(true)
   })
 
   it("should not create a transaction if debtor doesn't have enough credit", async () => {
-    expect(async () => {
+    await expect(async () => {
       await sut.handle({
         amount: 600,
         debtor_id: 'test-pedro',
@@ -83,7 +83,7 @@ describe('Create Transaction Use Case', () => {
   })
 
   it('should not create a transaction if debtor is not found', async () => {
-    expect(async () => {
+    await expect(async () => {
       await sut.handle({
         amount: 600,
         debtor_id: 'test-ana',
@@ -94,7 +94,7 @@ describe('Create Transaction Use Case', () => {
   })
 
   it('should not create a transaction if receiver is not found', async () => {
-    expect(async () => {
+    await expect(async () => {
       await sut.handle({
         amount: 200,
         debtor_id: 'test-pedro',
@@ -111,11 +111,11 @@ describe('Create Transaction Use Case', () => {
       receiver_id: 'test-pedro',
     })
 
-    expect(transaction).toBeTruthy()
+    await expect(transaction).toBeTruthy()
 
     const user = await userRepository.findUserById('test-pedro')
 
-    expect(Number(user?.wallet)).toBe(1500)
+    await expect(Number(user?.wallet)).toBe(1500)
   })
 
   test('user should withdrawal credit to bank', async () => {
@@ -125,15 +125,15 @@ describe('Create Transaction Use Case', () => {
       debtor_id: 'test-pedro',
     })
 
-    expect(transaction).toBeTruthy()
+    await expect(transaction).toBeTruthy()
 
     const user = await userRepository.findUserById('test-pedro')
 
-    expect(Number(user?.wallet)).toBe(300)
+    await expect(Number(user?.wallet)).toBe(300)
   })
 
   test("user should not withdrawal credit to bank if it doesn't have enough credit", async () => {
-    expect(async () => {
+    await expect(async () => {
       await sut.handle({
         amount: 1000,
         method: 'PIX',
@@ -153,7 +153,7 @@ describe('Create Transaction Use Case', () => {
     const debitedUser = await userRepository.findUserById('test-pedro')
     const creditedUser = await userRepository.findUserById('test-jdoe')
 
-    expect(Number(debitedUser?.wallet)).toBe(0)
-    expect(Number(creditedUser?.wallet)).toBe(1500)
+    await expect(Number(debitedUser?.wallet)).toBe(0)
+    await expect(Number(creditedUser?.wallet)).toBe(1500)
   })
 })

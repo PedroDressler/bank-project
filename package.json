@@ -8,6 +8,8 @@
     "dev": "tsx watch src/server.ts",
     "test:unit": "vitest run --dir src/use-cases",
     "test:unit:watch": "vitest --dir src/use-cases",
+    "test:create-prisma-environment": "npm link ./prisma/vitest-environment-prisma",
+    "test:install-prisma-environment": "npm link vitest-environment-prisma",
     "pretest:e2e": "run-s test:create-prisma-environment test:install-prisma-environment",
     "test:e2e": "vitest run --dir src/http",
     "test:e2e:watch": "vitest --dir src/http",

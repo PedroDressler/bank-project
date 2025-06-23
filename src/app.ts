@@ -1,7 +1,7 @@
 import fastify from 'fastify'
 import { PrismaClient } from '@prisma/client'
-import { userRoutes } from './controllers/users/routes'
-import { transactionRoutes } from './controllers/transactions/routes'
+import { userRoutes } from './http/controllers/users/routes'
+import { transactionRoutes } from './http/controllers/transactions/routes'
 import { ZodError } from 'zod'
 import { env } from './env'
 

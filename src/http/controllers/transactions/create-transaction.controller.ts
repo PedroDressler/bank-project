@@ -1,8 +1,8 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
-import { makeCreateTransactionUseCase } from '../../use-cases/factories/make-create-transaction-use-case'
-import { ResourceNotFoundError } from '../../errors/resource-not-found-error'
-import { UnauthorizedError } from '../../errors/unauthorized-error'
+import { makeCreateTransactionUseCase } from '@/use-cases/factories/make-create-transaction-use-case'
+import { UnauthorizedError } from '@/errors/unauthorized-error'
+import { ResourceNotFoundError } from '@/errors/resource-not-found-error'
 
 export async function createTransaction(
   request: FastifyRequest,

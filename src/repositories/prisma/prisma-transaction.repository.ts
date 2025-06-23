@@ -1,43 +1,29 @@
-import { Prisma } from '@prisma/client'
+import { Prisma, Transaction } from '@prisma/client'
 import {
   TransactionRepositories,
-  UpdateTransactionInvolvedAmount,
+  UpdateTransactionInvolvedAmountParams,
 } from '../transaction-repositories'
 import { prisma } from '../../app'
 
 export class PrismaTransactionRepository implements TransactionRepositories {
-  async validateTransaction(transactionId: string) {
-    const transaction = await prisma.transaction.update({
-      where: {
-        id: transactionId,
-      },
-      data: {
-        isTransactionAproved: true,
-      },
-    })
-
-    return transaction
-  }
-
   async updateTransactionInvolvedAmount({
-    receiverChangedDetails,
-    debtorChangedDetails,
-  }: UpdateTransactionInvolvedAmount) {
+    details: { creditedUserDetails, debitedUserDetails },
+  }: UpdateTransactionInvolvedAmountParams): Promise<Transaction | null> {
     const receiver = await prisma.user.update({
       data: {
-        wallet: receiverChangedDetails.wallet,
+        wallet: creditedUserDetails?.wallet,
       },
       where: {
-        id: receiverChangedDetails.id,
+        id: creditedUserDetails?.id,
       },
     })
 
     const debtor = await prisma.user.update({
       data: {
-        wallet: debtorChangedDetails.wallet,
+        wallet: debitedUserDetails?.wallet,
       },
       where: {
-        id: debtorChangedDetails.id,
+        id: debitedUserDetails?.id,
       },
     })
 
@@ -46,6 +32,19 @@ export class PrismaTransactionRepository implements TransactionRepositories {
         debtor,
         receiver,
         isTransactionAproved: false,
+      },
+    })
+
+    return transaction
+  }
+
+  async validateTransaction(transactionId: string) {
+    const transaction = await prisma.transaction.update({
+      where: {
+        id: transactionId,
+      },
+      data: {
+        isTransactionAproved: true,
       },
     })
 

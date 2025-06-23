@@ -1,13 +1,13 @@
-import { Transaction } from '@prisma/client'
-import { TransactionRepositories } from '../repositories/transaction-repositories'
-import { ResourceNotFoundError } from '../errors/resource-not-found-error'
+import { Transaction } from "@prisma/client";
+import { TransactionRepositories } from "../repositories/transaction-repositories";
+import { ResourceNotFoundError } from "../errors/resource-not-found-error";
 
 interface ValidateTransactionUseCaseRequest {
-  transactionId: string
+  transactionId: string;
 }
 
 interface ValidateTransactionUseCaseResponse {
-  transaction: Transaction
+  transaction: Transaction;
 }
 
 export class ValidateTransactionUseCase {
@@ -17,10 +17,10 @@ export class ValidateTransactionUseCase {
     transactionId,
   }: ValidateTransactionUseCaseRequest): Promise<ValidateTransactionUseCaseResponse> {
     const transaction =
-      await this.transactionRepository.validateTransaction(transactionId)
+      await this.transactionRepository.validateTransaction(transactionId);
 
-    if (!transaction) throw new ResourceNotFoundError()
+    if (!transaction) throw new ResourceNotFoundError();
 
-    return { transaction }
+    return { transaction };
   }
 }

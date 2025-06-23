@@ -1,18 +1,18 @@
-import { User } from '@prisma/client'
-import { UserRepositories } from '../repositories/user-repositories'
-import { hash } from 'bcrypt'
-import { ResourceAlreadyExistsError } from '../errors/resource-already-exists-error'
+import { User } from "@prisma/client";
+import { UserRepositories } from "../repositories/user-repositories";
+import { hash } from "bcrypt";
+import { ResourceAlreadyExistsError } from "../errors/resource-already-exists-error";
 
 interface RegisterUseCaseRequest {
-  cpf: string
-  email: string
-  password: string
-  username: string
-  full_name: string
+  cpf: string;
+  email: string;
+  password: string;
+  username: string;
+  full_name: string;
 }
 
 interface RegisterUseCaseResponse {
-  user: User
+  user: User;
 }
 
 export class RegisterUseCase {
@@ -25,23 +25,23 @@ export class RegisterUseCase {
     username,
     full_name,
   }: RegisterUseCaseRequest): Promise<RegisterUseCaseResponse> {
-    const userWithSameEmail = await this.userRepository.findUserByEmail(email)
+    const userWithSameEmail = await this.userRepository.findUserByEmail(email);
 
     if (userWithSameEmail) {
-      throw new ResourceAlreadyExistsError()
+      throw new ResourceAlreadyExistsError();
     }
 
-    const userWithSameCPF = await this.userRepository.findUserByCPF(cpf)
+    const userWithSameCPF = await this.userRepository.findUserByCPF(cpf);
 
     if (userWithSameCPF) {
-      throw new ResourceAlreadyExistsError()
+      throw new ResourceAlreadyExistsError();
     }
 
     const userWithSameUserName =
-      await this.userRepository.findUserByUserName(username)
+      await this.userRepository.findUserByUserName(username);
 
     if (userWithSameUserName) {
-      throw new ResourceAlreadyExistsError()
+      throw new ResourceAlreadyExistsError();
     }
 
     const user = await this.userRepository.registerUser({
@@ -51,8 +51,8 @@ export class RegisterUseCase {
       username,
       full_name,
       wallet: 0.0,
-    })
+    });
 
-    return { user }
+    return { user };
   }
 }
